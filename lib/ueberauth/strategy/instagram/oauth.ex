@@ -58,6 +58,7 @@ defmodule Ueberauth.Strategy.Instagram.OAuth do
   end
 
   def get_token(client, params, headers) do
+    params = Keyword.put(params, :client_secret, client.client_secret)
     client
     |> put_header("Accept", "application/json")
     |> OAuth2.Strategy.AuthCode.get_token(params, headers)
