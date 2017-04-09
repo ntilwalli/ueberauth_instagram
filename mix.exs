@@ -8,15 +8,15 @@ defmodule UeberauthInstagram.Mixfile do
     [app: :ueberauth_instagram,
      version: @version,
      name: "Ueberauth Instagram Strategy",
-     package: package,
+     package: package(),
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      source_url: @url,
      homepage_url: @url,
-     description: description,
-     deps: deps,
-     docs: docs]
+     description: description(),
+     deps: deps(),
+     docs: docs()]
   end
 
   def application do
@@ -32,7 +32,7 @@ defmodule UeberauthInstagram.Mixfile do
   end
 
   defp docs do
-    [extras: docs_extras, main: "extra-readme"]
+    [extras: docs_extras(), main: "extra-readme"]
   end
 
   defp docs_extras do
