@@ -45,7 +45,25 @@ defmodule Ueberauth.Strategy.Instagram do
       desc = token.other_params["error_description"]
       set_errors!(conn, [error(err, desc)])
     else
-      fetch_user(conn, token)
+      %{"access_token" => ac, "user_id" => user_id} = Jason.decode!(token.access_token)
+      result =
+        case :hackney.request(:get, "https://graph.instagram.com/#{user_id}?fields=id,username&access_token=#{ac}", [], "", []) do
+          {:ok, ref} when is_reference(ref) ->
+            :hackney.body(ref)
+          {:ok, status, headers, ref} when is_reference(ref) ->
+            :hackney.body(ref)
+          {:ok, _status, _headers, body} when is_binary(body) ->
+            {:ok, body}
+          out -> out
+        end
+
+      case result do
+        {:error, reason} ->
+          set_errors!(conn, [error(reason, reason)])
+        {:ok, body} ->
+          %{"id" => _uid, "username" => _username} = result = Jason.decode!(body)
+          fetch_user(conn, result)
+      end
     end
   end
 
@@ -77,16 +95,7 @@ defmodule Ueberauth.Strategy.Instagram do
   Includes the credentials from the instagram response.
   """
   def credentials(conn) do
-    token = conn.private.instagram_token
-    scopes = token.other_params["scope"] || ""
-    scopes = String.split(scopes, ",")
-
-    %Credentials{
-      expires: !!token.expires_at,
-      expires_at: token.expires_at,
-      scopes: scopes,
-      token: token.access_token
-    }
+    %Credentials{}
   end
 
   @doc """
@@ -95,15 +104,8 @@ defmodule Ueberauth.Strategy.Instagram do
   """
   def info(conn) do
     user = conn.private.instagram_user
-
     %Info{
-      nickname: user["username"],
-      name: user["full_name"],
-      description: user["bio"],
-      image: user["profile_picture"],
-      urls: %{
-        website: user["website"]
-      }
+      nickname: user["username"]
     }
   end
 
@@ -113,16 +115,11 @@ defmodule Ueberauth.Strategy.Instagram do
   """
   def extra(conn) do
     %Extra{
-      raw_info: %{
-        token: conn.private.instagram_token,
-        user: conn.private.instagram_user
-      }
+      raw_info: conn.private.instagram_user
     }
   end
 
-  defp fetch_user(conn, token) do
-    conn = put_private(conn, :instagram_token, token)
-    user = token.other_params["user"]
+  defp fetch_user(conn, user) do
     put_private(conn, :instagram_user, user)
   end
 
