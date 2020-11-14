@@ -1,8 +1,8 @@
 defmodule UeberauthInstagram.Mixfile do
   use Mix.Project
 
-  @version "0.2.0"
-  @url "https://github.com/jasontruluck/ueberauth_instagram"
+  @version "0.2.1"
+  @url "https://github.com/ntilwalli/ueberauth_instagram"
 
   def project do
     [app: :ueberauth_instagram,
