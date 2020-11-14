@@ -24,7 +24,7 @@ defmodule UeberauthInstagram.Mixfile do
   end
 
   defp deps do
-    [{:ueberauth, "~> 0.6.1"},
+    [{:ueberauth, "~> 0.6.3"},
      {:oauth2, "~> 0.5"},
      {:ex_doc, "~> 0.1", only: :dev},
      {:earmark, ">= 0.0.0", only: :dev},

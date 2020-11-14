@@ -3,7 +3,7 @@ defmodule Ueberauth.Strategy.Instagram do
   Instagram Strategy for Überauth.
   """
 
-  use Ueberauth.Strategy, default_scope: "public_content",
+  use Ueberauth.Strategy, default_scope: "user_profile",
                           uid_field: :id,
                           allowed_request_params: [
                             :auth_type,
